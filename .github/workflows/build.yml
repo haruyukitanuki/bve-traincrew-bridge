@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # strategy:
+    #   matrix:
+    #     platform: ['x64', 'x86']
+    #     standalone: [true, false]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup dotnet 6.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - name: Build Exe
+        run: dotnet publish -c Release \
+          -o ./out \
+          -r win-x64 -p:PublishSingleFile=false --self-contained false
+      - name: Upload Exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: bve-traincrew-brigde-x64.exe
+          path: out/bve-traincrew-brigde.exe
+      
