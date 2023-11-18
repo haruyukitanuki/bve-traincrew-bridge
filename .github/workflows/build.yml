@@ -26,6 +26,6 @@ jobs:
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
-          name: bve-traincrew-brigde-x64.exe
-          path: out/bve-traincrew-brigde.exe
+          name: bve-traincrew-bridge-x64.exe
+          path: out/bve-traincrew-bridge.exe
       
