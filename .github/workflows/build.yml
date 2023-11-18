@@ -18,9 +18,10 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Build Exe
-        run: dotnet publish -c Release \
-          -o ./out \
-          -r win-x64 -p:PublishSingleFile=false --self-contained false
+        run: |
+          dotnet publish -c Release \
+            -o ./out \
+            -r win-x64 -p:PublishSingleFile=false --self-contained false
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
