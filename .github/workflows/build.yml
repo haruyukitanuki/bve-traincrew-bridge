@@ -18,10 +18,11 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Build Exe
+        working-directory: ./bve-traincrew-bridge
         run: |
           dotnet publish -c Release \
-            -o ./out \
-            -r win-x64 -p:PublishSingleFile=false --self-contained false
+            -o ../out \
+            -r win-x64 -p:PublishSingleFile=true --self-contained false
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
