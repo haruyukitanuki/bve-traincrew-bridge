@@ -10,6 +10,10 @@
     <Platforms>x64;x86</Platforms>
     <PublishSingleFile>false</PublishSingleFile>
     <SelfContained>false</SelfContained>
+    
+    <AssemblyName>bve-traincrew-bridge</AssemblyName>
+    <Company>Kesigomon</Company>
+    <Authors>Kesigomon</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
