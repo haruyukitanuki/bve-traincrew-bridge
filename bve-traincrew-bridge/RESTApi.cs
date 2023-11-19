@@ -24,7 +24,7 @@ public class RESTApi
         var serverSettings = new WebserverSettings()
         {
             Hostname = "127.0.0.1",
-            Port = 62000
+            Port = 56001
         };
         var server = new Webserver(serverSettings, DefaultRoute);
 
