@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
+using bve_traincrew_bridge;
 using TrainCrew;
-
-
 
 internal class Program
 {
@@ -11,6 +10,8 @@ internal class Program
     private int PreviousPnotch = 0;
     private int PreviousBnotch = 0;
     private BeaconHandler Handler;
+    
+    public TascObject TascData { get; set; } = new();
 
     Program()
     {
@@ -27,6 +28,10 @@ internal class Program
     private async Task main(string[] args)
     {
         TrainCrewInput.Init();
+        
+        // Start REST API
+        new RESTApi(TascData);
+        
         try
         {
             loadPlugin();
@@ -143,8 +148,25 @@ internal class Program
     {
         Handler.Reset();
         AtsPlugin.Initialize(1);
-        
     }
+
+    private void PopulateTascData(int[] panelLamps)
+    {
+        // autopilot.iniパネル設定
+        // 50 = tascenabled
+        // 51 = tascmonitor
+        // 52 = tascbrake
+        // 53 = tascposition
+        // 54 = inching
+        
+        // Populate TASC data into TascData
+        TascData.Power = panelLamps[50] != 0;
+        TascData.Monitor = panelLamps[51] != 0;
+        TascData.Brake = panelLamps[52];
+        TascData.Position = panelLamps[53];
+        TascData.Inching = panelLamps[54] != 0;
+    } 
+    
     private AtsPlugin.ATS_HANDLES elapse(TrainState trainState)
     {
         var vehicleState = new AtsPlugin.ATS_VEHICLESTATE();
@@ -173,6 +195,9 @@ internal class Program
         var panel = new int[256];
         var sound = new int[256];
         var result = AtsPlugin.Elapse(vehicleState, panel, sound);
+        
+        PopulateTascData(panel);
+        
         return result;
     }
 
