@@ -18,19 +18,19 @@ public class TascObject
 // Create a webserver using WatsonWebserver and respond with the TASC data
 public class RESTApi
 {
-    public RESTApi(TascObject tascObject)
+    public RESTApi(int port, TascObject tascObject)
     {
         _tascObject = tascObject;
         var serverSettings = new WebserverSettings()
         {
             Hostname = "127.0.0.1",
-            Port = 56001
+            Port = port
         };
         var server = new Webserver(serverSettings, DefaultRoute);
 
         server.Routes.PreAuthentication.Static.Add(WatsonWebserver.Core.HttpMethod.GET, "/data", GetDataRoute);
         
-        Console.WriteLine("REST APIサーバーを起動しました。");
+        Console.WriteLine($"タヌ電TIMSの改造APIサーバーを起動しました。（ポート{port}）");
         server.Start();
     }
     

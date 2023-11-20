@@ -29,8 +29,14 @@ internal class Program
     {
         TrainCrewInput.Init();
         
+        // Load settings
+        var config = new LoadConfig();
+        
         // Start REST API
-        new RESTApi(TascData);
+        if (config.RestApiEnable)
+        {
+            new RESTApi(config.RestApiPort, TascData);
+        }
         
         try
         {
@@ -45,7 +51,6 @@ internal class Program
                 if (state.diaName != PreviousDiaName || firstLoop)
                 {
                     loadTrain(state);
-                    
                 }
                 // 明らかに時刻が戻っている場合は、最初からを選んだので路線のみ再読み込み
                 // Todo: TrainCrew側でState実装されたらそちらに変更
