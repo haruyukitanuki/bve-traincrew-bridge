@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 using bve_traincrew_bridge;
 using TrainCrew;
 
@@ -27,6 +28,9 @@ internal class Program
 
     private async Task main(string[] args)
     {
+        // Enable Kana/Kanji console output
+        Console.OutputEncoding = Encoding.GetEncoding("UTF-8");
+        
         TrainCrewInput.Init();
         
         // Load settings
