@@ -33,13 +33,14 @@ internal class Program
         
         TrainCrewInput.Init();
         
-        // Load settings
-        var config = new LoadConfig();
+        // Load config
+        Config.LoadConfig();
+        
         
         // Start REST API
-        if (config.RestApiEnable)
+        if (Config.RestApiEnable)
         {
-            new RESTApi(config.RestApiPort, TascData);
+            new RESTApi(Config.RestApiPort, TascData);
         }
         
         try
@@ -162,18 +163,12 @@ internal class Program
     private void PopulateTascData(int[] panelLamps)
     {
         // autopilot.iniパネル設定
-        // 50 = tascenabled
-        // 51 = tascmonitor
-        // 52 = tascbrake
-        // 53 = tascposition
-        // 54 = inching
-        
         // Populate TASC data into TascData
-        TascData.Power = panelLamps[50] != 0;
-        TascData.Monitor = panelLamps[51] != 0;
-        TascData.Brake = panelLamps[52];
-        TascData.Position = panelLamps[53];
-        TascData.Inching = panelLamps[54] != 0;
+        TascData.Power = panelLamps[Config.TASCConfig.tascenabled] != 0;
+        TascData.Monitor = panelLamps[Config.TASCConfig.tascmonitor] != 0;
+        TascData.Brake = panelLamps[Config.TASCConfig.tascbrake];
+        TascData.Position = panelLamps[Config.TASCConfig.tascposition];
+        TascData.Inching = panelLamps[Config.TASCConfig.inching] != 0;
     } 
     
     private AtsPlugin.ATS_HANDLES elapse(TrainState trainState)
@@ -204,8 +199,12 @@ internal class Program
         var panel = new int[256];
         var sound = new int[256];
         var result = AtsPlugin.Elapse(vehicleState, panel, sound);
-        
-        PopulateTascData(panel);
+
+        // もしREST APIを有効にしていたら、TASCデータを更新する
+        if (Config.RestApiEnable)
+        {
+            PopulateTascData(panel);   
+        }
         
         return result;
     }

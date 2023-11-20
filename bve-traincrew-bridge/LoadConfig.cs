@@ -3,35 +3,84 @@ using IniParser.Model;
 
 namespace bve_traincrew_bridge;
 
-public class LoadConfig
+public class TASCConfigObject
 {
-    public bool RestApiEnable { get; set; } = false;
-    public int RestApiPort { get; set; } = 56001;
+    public int tascenabled { get; set; }
+    public int tascmonitor { get; set; }
+    public int tascbrake { get; set; }
+    public int tascposition { get; set; }
+    public int inching { get; set; }
+}
+
+public static class Config
+{
+    public static bool RestApiEnable { get; set; } = false;
+    public static int RestApiPort { get; set; } = 56001;
+    public static TASCConfigObject TASCConfig { get; set; } = new();
     
-    public LoadConfig()
+    public static void LoadConfig()
     {
         var parser = new FileIniDataParser();
-        IniData data = new();
+        IniData appConfig = new();
+        IniData autoPilotConfig = new();
+        
+        // Bridge config
         try
         {
-            data = parser.ReadFile("bridge_config.ini");
+            appConfig = parser.ReadFile("bridge_config.ini");
         }
         catch (Exception)
         {
             Console.WriteLine("設定ファイルが見つけません。デフォルト設定で起動します。");
         }
-        
-        const string tanudenModApiSectionName = "tanuden_mod_api";
 
-        // Only if the key exists, set it
-        if (data[tanudenModApiSectionName].ContainsKey("enable"))
+        // TASC, Autopilot config
+        try
         {
-            RestApiEnable = bool.Parse(data[tanudenModApiSectionName]["enable"]);
+            autoPilotConfig = parser.ReadFile("autopilot.ini");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("自動運転プラグインの設定ファイルが見つけません。デフォルト設定で起動します。");
+            throw;
         }
         
-        if (data[tanudenModApiSectionName].ContainsKey("port"))
+        
+        const string tanudenModApiSectionName = "tanuden_mod_api";
+        // Only if the key exists, set it
+        if (appConfig[tanudenModApiSectionName].ContainsKey("enable"))
         {
-            RestApiPort = int.Parse(data[tanudenModApiSectionName]["port"]);
+            RestApiEnable = bool.Parse(appConfig[tanudenModApiSectionName]["enable"]);
+        }
+        
+        if (appConfig[tanudenModApiSectionName].ContainsKey("port"))
+        {
+            RestApiPort = int.Parse(appConfig[tanudenModApiSectionName]["port"]);
+        }
+        
+        
+        // Set for autopilot
+        const string panelSectionName = "panel";
+        if (!RestApiEnable) return;
+        if (autoPilotConfig[panelSectionName].ContainsKey("tascenabled"))
+        {
+            TASCConfig.tascenabled = int.Parse(autoPilotConfig[panelSectionName]["tascenabled"]);
+        }
+        if (autoPilotConfig[panelSectionName].ContainsKey("tascmonitor"))
+        {
+            TASCConfig.tascmonitor = int.Parse(autoPilotConfig[panelSectionName]["tascmonitor"]);
+        }
+        if (autoPilotConfig[panelSectionName].ContainsKey("tascbrake"))
+        {
+            TASCConfig.tascbrake = int.Parse(autoPilotConfig[panelSectionName]["tascbrake"]);
+        }
+        if (autoPilotConfig[panelSectionName].ContainsKey("tascposition"))
+        {
+            TASCConfig.tascposition = int.Parse(autoPilotConfig[panelSectionName]["tascposition"]);
+        }
+        if (autoPilotConfig[panelSectionName].ContainsKey("inching"))
+        {
+            TASCConfig.inching = int.Parse(autoPilotConfig[panelSectionName]["inching"]);
         }
     }
 }
