@@ -20,6 +20,7 @@ public static class Config
     
     public static void LoadConfig()
     {
+        // Todo: ロギング用のライブラリを使う
         var parser = new FileIniDataParser();
         IniData appConfig = new();
         IniData autoPilotConfig = new();
@@ -31,7 +32,7 @@ public static class Config
         }
         catch (Exception)
         {
-            Console.WriteLine("設定ファイルが見つけません。デフォルト設定で起動します。");
+            Console.WriteLine("設定ファイルが見つかりませんでした。デフォルト設定で起動します。");
         }
 
         // TASC, Autopilot config
@@ -41,7 +42,7 @@ public static class Config
         }
         catch (Exception)
         {
-            Console.WriteLine("自動運転プラグインの設定ファイルが見つけません。デフォルト設定で起動します。");
+            Console.WriteLine("自動運転プラグインの設定ファイルが見つかりませんでした。デフォルト設定で起動します。");
             throw;
         }
         
