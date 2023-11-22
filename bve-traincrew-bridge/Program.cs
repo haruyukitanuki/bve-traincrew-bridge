@@ -11,9 +11,8 @@ internal class Program
     private int PreviousPnotch = 0;
     private int PreviousBnotch = 0;
     private BeaconHandler Handler;
+    private RESTApi RestApi;
     
-    public TascObject TascData { get; set; } = new();
-
     Program()
     {
         Handler = new BeaconHandler();
@@ -40,9 +39,12 @@ internal class Program
         // Start REST API
         if (Config.RestApiEnable)
         {
-            new RESTApi(Config.RestApiPort, TascData);
+            RestApi = new IRestApi(Config.RestApiPort);
         }
-        
+        else
+        {
+            RestApi = new EmptyRestApi();
+        }
         try
         {
             loadPlugin();
@@ -164,11 +166,13 @@ internal class Program
     {
         // autopilot.iniパネル設定
         // Populate TASC data into TascData
-        TascData.Power = panelLamps[Config.TASCConfig.tascenabled] != 0;
-        TascData.Monitor = panelLamps[Config.TASCConfig.tascmonitor] != 0;
-        TascData.Brake = panelLamps[Config.TASCConfig.tascbrake];
-        TascData.Position = panelLamps[Config.TASCConfig.tascposition];
-        TascData.Inching = panelLamps[Config.TASCConfig.inching] != 0;
+        TascObject tascData = new TascObject();
+        tascData.Power = panelLamps[Config.TASCConfig.tascenabled] != 0;
+        tascData.Monitor = panelLamps[Config.TASCConfig.tascmonitor] != 0;
+        tascData.Brake = panelLamps[Config.TASCConfig.tascbrake];
+        tascData.Position = panelLamps[Config.TASCConfig.tascposition];
+        tascData.Inching = panelLamps[Config.TASCConfig.inching] != 0;
+        RestApi.SetTascObject(tascData);
     } 
     
     private AtsPlugin.ATS_HANDLES elapse(TrainState trainState)

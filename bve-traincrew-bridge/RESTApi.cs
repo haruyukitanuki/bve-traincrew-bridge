@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text.Json;
 using WatsonWebserver;
 using WatsonWebserver.Core;
-using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace bve_traincrew_bridge;
 
@@ -16,11 +15,23 @@ public class TascObject
 }
 
 // Create a webserver using WatsonWebserver and respond with the TASC data
-public class RESTApi
+
+public interface RESTApi
 {
-    public RESTApi(int port, TascObject tascObject)
+    public void SetTascObject(TascObject tascObject);
+}
+
+public class EmptyRestApi : RESTApi
+{
+    public void SetTascObject(TascObject tascObject){}
+}
+
+public class IRestApi: RESTApi
+{
+    private TascObject _tascObject;
+    public IRestApi(int port)
     {
-        _tascObject = tascObject;
+        _tascObject = new TascObject();
         var serverSettings = new WebserverSettings()
         {
             Hostname = "127.0.0.1",
@@ -33,8 +44,11 @@ public class RESTApi
         Console.WriteLine($"タヌ電TIMSの改造APIサーバーを起動しました。（ポート{port}）");
         server.Start();
     }
-    
-    private readonly TascObject _tascObject;
+
+    public void SetTascObject(TascObject tascObject)
+    {
+        _tascObject = tascObject;
+    }
     
     private async Task DefaultRoute(HttpContextBase ctx)
     {
