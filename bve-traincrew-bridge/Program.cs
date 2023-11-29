@@ -17,8 +17,7 @@ internal class Program
     private BeaconHandler Handler;
     
     // Get version of this assembly
-    private static string? Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-    private static string TanudenPluginUid = "kesigomon.bve_traincrew_bridge";
+    internal static string? Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
     Program()
     {
@@ -41,21 +40,10 @@ internal class Program
         Console.OutputEncoding = Encoding.GetEncoding("UTF-8");
         
         TrainCrewInput.Init();
-        
-        // Start REST API
+
         if (Config.ApiEnable)
         {
-            Console.WriteLine("タヌ電のAPIを待機中...");
-            TanudenTIMSAPI.WaitForApi();
-            Console.WriteLine("タヌ電のAPIに接続オーライ！");
-            
-            TanudenTIMSAPI.Init(new PluginMeta
-            {
-                Uid = TanudenPluginUid,
-                Name = "BVE TrainCrew Bridge",
-                Version = Version!,
-                Author = "Kesigomon"
-            });
+            TanudenIntegration.RegisterApi();
         }
         
         try
@@ -207,27 +195,7 @@ internal class Program
         // もしREST APIを有効にしていたら、TASCデータを更新する
         if (Config.ApiEnable)
         {
-            TanudenTIMSAPI.SendData(new PluginState
-            {
-                Uid = TanudenPluginUid,
-                Data = new
-                {
-                    trainState = new
-                    {
-                        lamps = new
-                        {
-                            tasc = new
-                            {
-                                power = panel[Config.TASCConfig.tascenabled] != 0,
-                                monitor = panel[Config.TASCConfig.tascmonitor] != 0,
-                                brake = panel[Config.TASCConfig.tascbrake],
-                                position = panel[Config.TASCConfig.tascposition],
-                                inching = panel[Config.TASCConfig.inching] != 0
-                            }
-                        }
-                    }
-                }
-            });
+            TanudenIntegration.SendTascPanel(panel);
         }
         
         return result;
