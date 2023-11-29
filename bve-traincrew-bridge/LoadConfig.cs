@@ -30,7 +30,7 @@ public static class Config
         }
         catch (Exception)
         {
-            Console.WriteLine("設定ファイルが見つけません。デフォルト設定で起動します。");
+            Console.WriteLine("設定ファイルが見つかりませんでした。デフォルト設定で起動します。");
         }
         
         const string tanudenModApiSectionName = "tanuden_mod_api";
